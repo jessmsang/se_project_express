@@ -30,7 +30,8 @@ const getUserById = (req, res) => {
         return res.status(NOT_FOUND).send({
           message: err.message,
         });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({
           message: err.message,
         });
