@@ -1,6 +1,5 @@
 const User = require("../models/user");
 const {
-  SUCCESS,
   CREATED,
   BAD_REQUEST,
   NOT_FOUND,
@@ -9,11 +8,11 @@ const {
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(SUCCESS).send(users))
+    .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
       return res.status(INTERNAL_SERVER_ERROR).send({
-        message: err.message,
+        message: "An error has occurred on the server",
       });
     });
 };
@@ -22,22 +21,22 @@ const getUserById = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail()
-    .then((user) => res.status(SUCCESS).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({
-          message: err.message,
+          message: "An error has occurred on the server",
         });
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({
-          message: err.message,
+          message: "An error has occurred on the server",
         });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({
-        message: err.message,
+        message: "An error has occurred on the server",
       });
     });
 };
@@ -50,11 +49,11 @@ const createUser = (req, res) => {
       console.error(err);
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({
-          message: err.message,
+          message: "An error has occurred on the server",
         });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({
-        message: err.message,
+        message: "An error has occurred on the server",
       });
     });
 };
