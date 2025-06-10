@@ -4,6 +4,7 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
@@ -16,13 +17,9 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({
-          message: "An error has occurred on the server",
-        });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -31,34 +28,37 @@ const getItems = (req, res) => {
     .then((items) => res.send(items))
     .catch((err) => {
       console.error(err);
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
 const deleteItemById = (req, res) => {
   const { itemId } = req.params;
 
-  Item.findByIdAndDelete(itemId)
+  Item.findById(itemId)
     .orFail()
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        const forbiddenError = new Error("You can only delete your own items");
+        forbiddenError.name = "ForbiddenError";
+        return Promise.reject(forbiddenError);
+      }
+      return Item.findByIdAndDelete(itemId);
+    })
     .then((item) => res.send({ data: item }))
     .catch((err) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({
-          message: "An error has occurred on the server",
-        });
+        return res.status(NOT_FOUND).send({ message: err.message });
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({
-          message: "An error has occurred on the server",
-        });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      if (err.name === "ForbiddenError") {
+        return res.status(FORBIDDEN).send({ message: err.message });
+      }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -73,18 +73,12 @@ const likeItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({
-          message: "An error has occurred on the server",
-        });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({
-          message: "An error has occurred on the server",
-        });
+        return res.status(NOT_FOUND).send({ message: err.message });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -99,18 +93,12 @@ const dislikeItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({
-          message: "An error has occurred on the server",
-        });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({
-          message: "An error has occurred on the server",
-        });
+        return res.status(NOT_FOUND).send({ message: err.message });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
