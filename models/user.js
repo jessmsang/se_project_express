@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "This field is required."],
-    minlength: 2,
-    maxlength: 30,
+    minlength: [2, "This field must be at least 2 characters long."],
+    maxlength: [30, "This field must be no more than 30 characters long."],
   },
   avatar: {
     type: String,
@@ -45,11 +45,17 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
     .select("+password")
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error("Incorrect email or password"));
+        const UnauthorizedError = new Error("Invalid email or password");
+        UnauthorizedError.name = "UnauthorizedError";
+        UnauthorizedError.statusCode = 401;
+        return Promise.reject(UnauthorizedError);
       }
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          return Promise.reject(new Error("Incorrect email or password"));
+          const UnauthorizedError = new Error("Invalid email or password");
+          UnauthorizedError.name = "UnauthorizedError";
+          UnauthorizedError.statusCode = 401;
+          return Promise.reject(UnauthorizedError);
         }
         return user;
       });

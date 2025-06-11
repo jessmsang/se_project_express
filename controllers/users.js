@@ -10,16 +10,7 @@ const {
   UNAUTHORIZED,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
-const { publicUserHelper, privateUserHelper } = require("../utils/userHelpers");
-
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send(users.map((user) => publicUserHelper(user))))
-    .catch((err) => {
-      console.error(err);
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
-    });
-};
+const { privateUserHelper } = require("../utils/userHelpers");
 
 const getCurrentUser = (req, res) => {
   const { _id } = req.user;
@@ -32,12 +23,14 @@ const getCurrentUser = (req, res) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: "Not found." });
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: "Bad request." });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -61,14 +54,19 @@ const createUser = (req, res) => {
       console.error(err);
 
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: Object.values(err.errors)[0].message });
       }
       if (err.code === 11000) {
         return res.status(CONFLICT).send({
-          message: "This email is already registered",
+          message:
+            "This email is already registered. Please use a different email.",
         });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -90,7 +88,14 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(UNAUTHORIZED).send({ message: err.message });
+      if (err.name === "UnauthorizedError") {
+        return res
+          .status(UNAUTHORIZED)
+          .send({ message: "Invalid email or password." });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -110,17 +115,20 @@ const patchCurrentUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: "Not found." });
       }
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: Object.values(err.errors)[0].message });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
 module.exports = {
-  getUsers,
   getCurrentUser,
   createUser,
   login,
