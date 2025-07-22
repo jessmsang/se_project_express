@@ -4,6 +4,7 @@ const cors = require("cors");
 
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -23,6 +24,8 @@ app.use(cors());
 app.post("/signup", createUser);
 app.post("/signin", login);
 app.use("/", mainRouter);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
