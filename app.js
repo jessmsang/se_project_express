@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -10,6 +12,7 @@ const {
   validateCreateUser,
   validateUserLogin,
 } = require("./middlewares/validation");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -26,12 +29,16 @@ mongoose
 app.use(express.json());
 app.use(cors());
 
+app.use(requestLogger);
+
 app.post("/signup", validateCreateUser, createUser);
 app.post("/signin", validateUserLogin, login);
+
 app.use("/", mainRouter);
 
-app.use(errors());
+app.use(errorLogger);
 
+app.use(errors());
 app.use(errorHandler);
 
 app.listen(PORT, () => {
