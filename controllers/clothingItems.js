@@ -1,11 +1,9 @@
 const Item = require("../models/clothingItem");
-const {
-  CREATED,
-  BadRequestError,
-  NotFoundError,
-  InternalServerError,
-  ForbiddenError,
-} = require("../utils/errors");
+const { BadRequestError } = require("../utils/BadRequestError");
+const { NotFoundError } = require("../utils/NotFoundError");
+const { InternalServerError } = require("../utils/InternalServerError");
+const { ForbiddenError } = require("../utils/ForbiddenError");
+const { CREATED } = require("../utils/errors");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
@@ -45,9 +43,10 @@ const deleteItemById = (req, res, next) => {
       if (item.owner.toString() !== req.user._id) {
         return next(new ForbiddenError("You can only delete your own items"));
       }
-      return Item.findByIdAndDelete(itemId);
+      return Item.findByIdAndDelete(itemId).then((item) =>
+        res.send({ data: item })
+      );
     })
-    .then((item) => res.send({ data: item }))
     .catch((err) => {
       console.error(err);
 
