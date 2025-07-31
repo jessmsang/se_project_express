@@ -4,6 +4,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
+const limiter = require("./middlewares/rateLimit");
+const helmet = require("./middlewares/helmet");
 
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
@@ -30,6 +32,8 @@ app.use(express.json());
 app.use(cors());
 
 app.use(requestLogger);
+app.use(limiter);
+app.use(helmet);
 
 app.get("/crash-test", () => {
   setTimeout(() => {
