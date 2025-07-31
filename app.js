@@ -9,7 +9,7 @@ const { errors } = require("celebrate");
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
 const errorHandler = require("./middlewares/errorHandler");
-// const limiter = require("./middlewares/rateLimit");
+const limiter = require("./middlewares/rateLimit");
 const {
   validateCreateUser,
   validateUserLogin,
@@ -29,10 +29,10 @@ mongoose
   .catch(console.error);
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: "https://www.wtwr-js.jumpingcrab.com" }));
 
 app.use(requestLogger);
-// app.use(limiter);
+app.use(limiter);
 app.use(helmet());
 
 app.get("/crash-test", () => {
