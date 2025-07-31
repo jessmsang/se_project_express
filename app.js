@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
-const helmet = require("helmet");
+// const helmet = require("helmet");
 const cors = require("cors");
 const { errors } = require("celebrate");
 
@@ -33,7 +33,7 @@ app.use(cors());
 
 app.use(requestLogger);
 app.use(limiter);
-app.use(helmet());
+// app.use(helmet());
 
 app.get("/crash-test", () => {
   setTimeout(() => {
