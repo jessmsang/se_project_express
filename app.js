@@ -32,8 +32,8 @@ app.use(express.json());
 app.use(cors({ origin: "https://www.wtwr-js.jumpingcrab.com" }));
 
 app.use(requestLogger);
-app.use(limiter);
 app.use(helmet());
+app.use(limiter);
 
 app.get("/crash-test", () => {
   setTimeout(() => {
