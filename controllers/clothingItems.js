@@ -43,8 +43,8 @@ const deleteItemById = (req, res, next) => {
       if (item.owner.toString() !== req.user._id) {
         return next(new ForbiddenError("You can only delete your own items"));
       }
-      return Item.findByIdAndDelete(itemId).then((item) =>
-        res.send({ data: item })
+      return Item.findByIdAndDelete(itemId).then((deletedItem) =>
+        res.send({ data: deletedItem })
       );
     })
     .catch((err) => {

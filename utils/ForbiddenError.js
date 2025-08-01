@@ -1,3 +1,5 @@
+const { FORBIDDEN } = require("./errors");
+
 class ForbiddenError extends Error {
   constructor(message) {
     super(message);

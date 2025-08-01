@@ -1,3 +1,5 @@
+const { INTERNAL_SERVER_ERROR } = require("./errors");
+
 class InternalServerError extends Error {
   constructor(message) {
     super(message);
