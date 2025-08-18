@@ -21,7 +21,7 @@ const { PORT = 3001 } = process.env;
 
 mongoose
   .connect(
-    "mongodb+srv://jessmsang:W5bD65TAT7UvRsLt@my-first-cluster.7bub5mw.mongodb.net/wtwr_db"
+    "mongodb+srv://jessmsang:IDa31UFTd9ifKKY3@my-first-cluster.7bub5mw.mongodb.net/wtwr_db"
   )
   .then(() => {
     console.log("Connected to DB");
