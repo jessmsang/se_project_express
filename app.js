@@ -17,12 +17,10 @@ const {
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
-const { PORT = 3001 } = process.env;
+const { PORT = 3001, MONGO_URI } = process.env;
 
 mongoose
-  .connect(
-    "mongodb+srv://jessmsang:IDa31UFTd9ifKKY3@my-first-cluster.7bub5mw.mongodb.net/wtwr_db"
-  )
+  .connect(MONGO_URI)
   .then(() => {
     console.log("Connected to DB");
   })
