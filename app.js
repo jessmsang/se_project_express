@@ -27,12 +27,7 @@ mongoose
   .catch(console.error);
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://www.wtwr-js.jumpingcrab.com",
-    credentials: true,
-  })
-);
+app.use(cors());
 
 app.use(requestLogger);
 app.use(helmet());
